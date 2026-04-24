@@ -17,6 +17,7 @@ import java.awt.GridBagLayout;
 
 
 public class WinInicial extends JDialog implements ActionListener {
+  private boolean closeButton;
   JButton button = new JButton("Selecionar");
   JButton close = new JButton("Fechar");
   JFileChooser fc = new JFileChooser();
@@ -63,6 +64,7 @@ public class WinInicial extends JDialog implements ActionListener {
       int returnVal = fc.showOpenDialog(this);
       if(returnVal == JFileChooser.APPROVE_OPTION){
          this.selectDirectory = fc.getSelectedFile();
+         closeButton = false;
          dispose();
       } else {
         System.out.println("Nada foi selecionado");
@@ -70,7 +72,12 @@ public class WinInicial extends JDialog implements ActionListener {
     }
 
     if(e.getSource()==close){
+      closeButton = true;
       dispose();
     };
   }
+
+  public boolean shouldClose(){
+    return this.closeButton;
+  };
 }

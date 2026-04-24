@@ -15,10 +15,9 @@ public class WinOrganize extends JDialog implements ActionListener{
   JButton yesButton = new JButton("Sim");
   JButton noButton = new JButton("Não");
   JLabel label = new JLabel("Deseja organizar também as sub-pastas?");
-  int returnval;
+  private boolean returnval;
   
   WinOrganize(){
-
     setModal(true);
     setTitle("O programa deve organizar arquivos dentro de pastas?");
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -35,17 +34,21 @@ public class WinOrganize extends JDialog implements ActionListener{
     add(label);
     add(yesButton);
     add(noButton);
-
-    pack();
   };
 
 
   @Override
   public void actionPerformed(ActionEvent e){
     if(e.getSource()==yesButton){
-       this.returnval = 1;
+       returnval = true;
+       dispose();
     }else if(e.getSource()==noButton){
+      returnval = false;
       dispose();
     };
+  };
+
+  public boolean getResult(){
+    return this.returnval;
   };
 };

@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -33,43 +36,35 @@ public class Functions {
     return name;
   };
 
-  public static void addItens(String[] data, Pasta rootFolder, List<Arquivo> archiveList, List<Pasta> folder) {
+  public static void addItens(String[] data, Pasta rootFolder, List<Arquivo> archiveList, List<Pasta> folder, boolean subFolders) {
       Tika tika = new Tika();
       for(String d : data){
         File file = new File(rootFolder.diretorio + "/" + d);
-        verifyAndAdd(file, tika, archiveList, folder);
+        verifyAndAdd(file, tika, archiveList, folder, subFolders);
       };
   }
   
-  public static void verifyAndAdd(File file, Tika tika, List<Arquivo> archiveList, List<Pasta> folder){
+  public static void verifyAndAdd(File file, Tika tika, List<Arquivo> archiveList, List<Pasta> folder, boolean subFolders){
         if(file.isFile()){
           addArchive(file, tika, archiveList);
         };
         if(file.isDirectory()){
-          addFolder(folder, file, tika, archiveList);
+          String name = file.getName();
+          File directory = file.getAbsoluteFile();
+
+          folder.add(new Pasta(name, directory));
+          
+          if(subFolders){
+            File[] subItens = directory.listFiles();
+            if(subItens != null){
+              for(File subItem : subItens){
+                 verifyAndAdd(subItem, tika, archiveList, folder, subFolders);
+              };
+            };
+          };
         };
   };
-  
-  public static void addFolder(List<Pasta> folder, File file, Tika tika, List<Arquivo> archiveList) {
-    try {
-      String name = file.getName();
-      File directory = file.getAbsoluteFile();
-      folder.add(new Pasta(name, directory));
-
-      File[] subItens = directory.listFiles();
-
-      if(subItens != null){
-        for(File subItem : subItens){
-           verifyAndAdd(subItem, tika, archiveList, folder);
-        };
-      };
-
-
-    } catch (Exception e){
-      System.out.println("Erro ao adicionar pasta: " + e);
-    };
-  };
-  
+ 
   public static void addArchive(File file, Tika tika, List<Arquivo> archiveList) {
     try {
       String name = file.getName();
@@ -78,7 +73,7 @@ public class Functions {
       String extension = (dotIndex == -1) ? "Sem extensão" : name.substring(dotIndex + 1).toLowerCase();
       String mimeType = tika.detect(file);
       
-      archiveList.add(new Arquivo(name, extension, mimeType));
+      archiveList.add(new Arquivo(name, extension, mimeType, file));
     } catch (Exception e){
       System.out.println("Erro ao processar o arquivo: " + e);
     };
@@ -117,5 +112,41 @@ public class Functions {
           System.out.println("Não foi possível criar a pasta (talvez ela já exista).");
       }
       return newFolder;
+  };
+  public static void createFolders(Pasta rootFolder, Map<String, Pasta> folderMap){
+      File pathNewRootFolder = Functions.createFolder(rootFolder);
+      int pastasCriadas = 0;
+      for(Arquivo a : rootFolder.arquivos ){
+          String mimeFolderName = a.getMimeType().contains("/") ? a.getMimeType().split("/")[0] : a.getMimeType();
+          String typeSubFolderName = a.getExtensionType();
+
+          File newFolderMime = new File(pathNewRootFolder, mimeFolderName);
+          File newFolderType = new File(newFolderMime, typeSubFolderName);
+          
+          if(newFolderType.mkdirs()){
+            pastasCriadas++;
+          };
+
+          System.out.println(newFolderType.getAbsolutePath());
+          Pasta newFolder = new Pasta(newFolderType.getName(), newFolderType.getAbsoluteFile());
+          folderMap.put(newFolderType.getName(), newFolder);
+
+          try {
+            Path originPath = a.getFileOriginal().toPath();
+            Path destinyPath = new File(newFolderType, a.getName()).toPath();
+
+            Files.move(originPath, destinyPath, StandardCopyOption.REPLACE_EXISTING);
+          } catch (Exception e) {
+            System.out.println("Não foi possível mover o arquivo: " + a.getName());
+          }
+          
+      };
+      printFolderResult(folderMap, pastasCriadas);
+  };
+
+  public static void printFolderResult(Map<String, Pasta> folderMap, int pastasCriadas){
+    System.out.println("Estrutura pronta!");
+    System.out.println("Total de categorias/extensões mapeadas: " + (folderMap.size() - 1)); // -1 por causa da 'Root'
+    System.out.println("Novas pastas físicas criadas: " + pastasCriadas);
   };
 }
