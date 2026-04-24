@@ -1,0 +1,6 @@
+cat <<EOF > .gitignore
+organ-files/target/
+*.class
+.DS_Store
+.direnv/
+EOF
