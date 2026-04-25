@@ -1,18 +1,14 @@
 package organ.project;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JFileChooser;
-
-import com.sun.java.swing.action.ExitAction;
-
 public class Main {
 
   static WinInicial novaWin =  new WinInicial();
   static WinOrganize startDialog = new WinOrganize();
+  static WinInput outputPath = new WinInput();
 
   public static void main(String[] args) throws Exception {
 
@@ -26,7 +22,7 @@ public class Main {
       };
       Functions.validateDirectory(novaWin);
 
-      Functions.addRootFolder(folder, folderMap, novaWin);  
+      Functions.addRootFolder(folder, folderMap, novaWin, outputPath);  
       Pasta rootFolder = folderMap.get("Root");
 
       Functions.startFolderDialog(startDialog);

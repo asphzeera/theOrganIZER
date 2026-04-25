@@ -36,13 +36,11 @@ public class WinInicial extends JDialog implements ActionListener {
     setModal(true);
     setTitle("Selecionar Pasta");
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-    setLayout(new FlowLayout(FlowLayout.CENTER));
-
-    setLocationRelativeTo(null);
-
     setLayout(new java.awt.GridBagLayout()); 
 
     getContentPane().setBackground(new Color(240, 240, 240));
+
+    setLocationRelativeTo(null);
 
     button.addActionListener(this);
     add(button);

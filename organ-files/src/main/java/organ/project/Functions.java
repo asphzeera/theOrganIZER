@@ -1,9 +1,5 @@
 package organ.project;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -25,9 +21,9 @@ public class Functions {
     startDialog.setVisible(true);
   };
 
-  public static String directoryName(){
-    System.out.println("Digite o nome da pasta OUTPUT: ");
-    return ScanLine();
+  public static String directoryName(WinInput outputPath){
+    outputPath.setVisible(true);
+    return outputPath.getText();
   }
 
   public static String ScanLine(){
@@ -39,7 +35,7 @@ public class Functions {
   public static void addItens(String[] data, Pasta rootFolder, List<Arquivo> archiveList, List<Pasta> folder, boolean subFolders) {
       Tika tika = new Tika();
       for(String d : data){
-        File file = new File(rootFolder.diretorio + "/" + d);
+        File file = new File(rootFolder.diretorio + File.separator + d);
         verifyAndAdd(file, tika, archiveList, folder, subFolders);
       };
   }
@@ -85,8 +81,8 @@ public class Functions {
       };
   }
 
-  public static void addRootFolder(List<Pasta> folder, Map<String, Pasta> folderMap, WinInicial novaWin){
-      String rootName = directoryName();
+  public static void addRootFolder(List<Pasta> folder, Map<String, Pasta> folderMap, WinInicial novaWin, WinInput outputPath){
+      String rootName = directoryName(outputPath);
       Pasta rootFolder = new Pasta(rootName, novaWin.selectDirectory);
       folder.add(rootFolder);
       folderMap.put("Root", rootFolder);
