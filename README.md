@@ -1,7 +1,3 @@
-Aqui está o README ajustado, com um tom mais limpo e sem emojis, mantendo a estrutura profissional:
-
----
-
 # File Organizer - Java + Apache Tika
 
 Sistema de organização de arquivos inteligente desenvolvido em Java 21, utilizando a biblioteca Apache Tika para detecção de tipos de arquivos (MIME types) e interface gráfica baseada em Swing. O projeto é gerenciado via Maven e configurado para execução em ambientes NixOS.
